@@ -1,0 +1,106 @@
+version: "3.8"
+
+services:
+  hr-db:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: hr_manager
+    volumes:
+      - hr-db-vol:/var/lib/mysql
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - hr-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "--silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  api-gateway:
+    build: ./api-gateway
+    restart: always
+    environment:
+      PORT: 3000
+      EMPLOYEE_SERVICE_URL: http://employee-service:3001
+      ATTENDANCE_SERVICE_URL: http://attendence-service:3002
+      LEAVE_SERVICE_URL: http://leave-service:3003
+      PAYROLL_SERVICE_URL: http://payroll-service:3004
+    networks:
+      - hr-net
+
+  employee-service:
+    build: ./employee-service
+    restart: always
+    environment:
+      PORT: 3001
+      DB_HOST: hr-db
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      DB_NAME: hr_manager
+    networks:
+      - hr-net
+
+  attendence-service:
+    build: ./attendence-service
+    restart: always
+    environment:
+      PORT: 3002
+      DB_HOST: hr-db
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      DB_NAME: hr_manager
+    networks:
+      - hr-net
+
+  leave-service:
+    build: ./leave-service
+    restart: always
+    environment:
+      PORT: 3003
+      DB_HOST: hr-db
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      DB_NAME: hr_manager
+    networks:
+      - hr-net
+
+  payroll-service:
+    build: ./payroll-service
+    restart: always
+    environment:
+      PORT: 3004
+      DB_HOST: hr-db
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      DB_NAME: hr_manager
+    networks:
+      - hr-net
+
+  web-service:
+    build: ./public
+    restart: always
+    networks:
+      - hr-net
+    # 🚫 No ports published; only accessible via Nginx
+
+  nginx-service:
+    build: ./nginx
+    restart: always
+    ports:
+      - "80:80"  # Only Nginx exposed
+    depends_on:
+      - api-gateway
+      - web-service
+    networks:
+      - hr-net
+
+volumes:
+  hr-db-vol:
+
+networks:
+  hr-net:

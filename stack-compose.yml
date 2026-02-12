@@ -1,0 +1,43 @@
+version: "3.8"
+
+services:
+  hr-db:
+    image: mysql:8.0
+
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+
+    volumes:
+      - hr-db-vol:/var/lib/mysql
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+    networks:
+      - hr-net
+
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "--silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+    deploy:
+      replicas: 3
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+      # placement:
+      #   constraints:
+      #     - node.role == manager
+
+volumes:
+  hr-db-vol:
+
+networks:
+  hr-net:
+    driver: overlay
