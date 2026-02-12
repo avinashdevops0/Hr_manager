@@ -45,41 +45,41 @@ services:
     networks:
       - hr-net
 
-  attendence-service:
-    build: ./attendence-service
-    restart: always
-    environment:
-      PORT: 3002
-      DB_HOST: hr-db
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      DB_NAME: hr_manager
-    networks:
-      - hr-net
+  # attendence-service:
+  #   build: ./attendence-service
+  #   restart: always
+  #   environment:
+  #     PORT: 3002
+  #     DB_HOST: hr-db
+  #     MYSQL_USER: ${MYSQL_USER}
+  #     MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+  #     DB_NAME: hr_manager
+  #   networks:
+  #     - hr-net
 
-  leave-service:
-    build: ./leave-service
-    restart: always
-    environment:
-      PORT: 3003
-      DB_HOST: hr-db
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      DB_NAME: hr_manager
-    networks:
-      - hr-net
+  # leave-service:
+  #   build: ./leave-service
+  #   restart: always
+  #   environment:
+  #     PORT: 3003
+  #     DB_HOST: hr-db
+  #     MYSQL_USER: ${MYSQL_USER}
+  #     MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+  #     DB_NAME: hr_manager
+  #   networks:
+  #     - hr-net
 
-  payroll-service:
-    build: ./payroll-service
-    restart: always
-    environment:
-      PORT: 3004
-      DB_HOST: hr-db
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      DB_NAME: hr_manager
-    networks:
-      - hr-net
+  # payroll-service:
+  #   build: ./payroll-service
+  #   restart: always
+  #   environment:
+  #     PORT: 3004
+  #     DB_HOST: hr-db
+  #     MYSQL_USER: ${MYSQL_USER}
+  #     MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+  #     DB_NAME: hr_manager
+  #   networks:
+  #     - hr-net
 
   web-service:
     build: ./public
