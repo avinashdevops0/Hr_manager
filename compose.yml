@@ -46,7 +46,7 @@ services:
       - hr-net
 
   attendence-service:
-    build: ./attendence-service
+    build: ./attendance-service
     restart: always
     environment:
       PORT: 3002
